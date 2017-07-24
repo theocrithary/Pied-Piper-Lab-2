@@ -9,12 +9,15 @@ from PIL import Image
 import hashlib
 import json
 
-VCAP_SERVICES = json.loads(os.environ['VCAP_SERVICES'])
-CREDENTIALS = VCAP_SERVICES["rediscloud"][0]["credentials"]
-r = redis.Redis(host=CREDENTIALS["hostname"], port=CREDENTIALS["port"], password=CREDENTIALS["password"])
+if 'VCAP_SERVICES' in os.environ:
+    VCAP_SERVICES = json.loads(os.environ['VCAP_SERVICES'])
+    CREDENTIALS = VCAP_SERVICES["rediscloud"][0]["credentials"]
+    r = redis.Redis(host=CREDENTIALS["hostname"], port=CREDENTIALS["port"], password=CREDENTIALS["password"])
+else:
+    r = redis.Redis(host='127.0.0.1', port='6379')
+
 size = 150, 150
 epoch_offset = 36000 #The offset in seconds with Sydney
-
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
